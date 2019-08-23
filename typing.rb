@@ -1,7 +1,19 @@
 require 'dotenv/load'
 require 'slack-ruby-client'
+require 'json'
 
 raise 'Missing ENV[SLACK_API_TOKENS]!' unless ENV.key?('SLACK_API_TOKENS')
+
+$categories = {}
+
+filepath = File.join(File.expand_path(File.dirname(__FILE__)), "fortunes")
+files = Dir.new(filepath)
+files.each do |file|
+  unless file == "." or file == ".."
+    data = File.read(File.join(filepath, file))
+    $categories[file] = data.strip.split("%")
+  end
+end
 
 $stdout.sync = true
 logger = Logger.new($stdout)
@@ -32,8 +44,16 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
 
   client.on(:message) do |data|
     # Test pulse, simply type `test` to self to check if app is running
-    if data.channel == "D7WHQFK9S" && data.user == "U7XCRLE78" && data.text == "test"
-      client.message channel: data.channel, text: "Always active! :)"
+    if data.channel == "D7WHQFK9S" && data.user == "U7XCRLE78"
+      if data.text == "test"
+        client.message channel: data.channel, text: "Always active! :)"
+      end
+    end
+
+    if data.text.include? "fortune"
+      key = $categories.keys.sample
+      text = $categories[key].sample.strip.gsub(/"/,"'").split("\n").join("\n>")
+      client.message channel: "GMEHL04BZ", text: "_fortune_ was detected! There it is :) \n>"+ text
     end
 
     if data.user != "U7XCRLE78"
