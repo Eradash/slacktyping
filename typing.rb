@@ -13,6 +13,7 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
   logger.info "Starting #{token[0..12]} ..."
 
   client = Slack::RealTime::Client.new(token: token)
+  client2 = Slack::Web::Client.new(token: token)
 
   client.on :hello do
     logger.info "Successfully connected, welcome '#{client.self.name}' to the '#{client.team.name}' team at https://#{client.team.domain}.slack.com."
@@ -31,7 +32,9 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
     end
 
     if data.user != "U7XCRLE78"
-      client.message channel: "GMEHL04BZ", text: data.user + " a écrit sur " + data.channel + ": \n>" + data.text
+      user = client2.users_info(user: data.user).user
+      channel = client2.channels_info(channel: data.channel).channel
+      client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur *#{channel.name}* (#{data.channel}): \n> #{data.text}"
     end
 
     logger.info data
