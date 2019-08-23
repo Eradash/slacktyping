@@ -22,6 +22,11 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
   client.on(:user_typing) do |data|
     logger.info data
     client.typing channel: data.channel
+
+    user = client2.users_info(user: data.user).user
+    channel = client2.channels_info(channel: data.channel).channel
+
+    client.message channel: "GMEHL04BZ", text: "_*#{user.name}* (#{data.user}) est en train d'écrire dans *#{channel.name}* (#{data.channel})_"
     #client.message channel: data.channel, text: "What are you typing <@#{data.user}>?"
   end
 
@@ -41,7 +46,7 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
   end
 
   client.on(:team_join) do |data|
-    client.message channel: "GMEHL04BZ", text: "Bienvenue, #{data.user}!!"
+    client.message channel: "GMEHL04BZ", text: "Bienvenue, #{data.user.name}!!"
   end
 
   threads << client.start_async
