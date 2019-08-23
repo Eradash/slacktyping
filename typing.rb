@@ -53,7 +53,7 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
     if data.text.include? "fortune"
       key = $categories.keys.sample
       text = $categories[key].sample.strip.gsub(/"/,"'").split("\n").join("\n>")
-      client.message channel: "GMEHL04BZ", text: "_fortune_ was detected! There it is :) \n>"+ text
+      client.message channel: "GMEHL04BZ", text: ">"+ text
     end
 
     if data.user != "U7XCRLE78"
