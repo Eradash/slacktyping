@@ -24,6 +24,23 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
     #client.message channel: data.channel, text: "What are you typing <@#{data.user}>?"
   end
 
+  client.on(:message) do |data|
+    # Test pulse, simply type `test` to self to check if app is running
+    if data.channel == "D7WHQFK9S" && data.user == "U7XCRLE78" && data.text == "test"
+      client.message channel: data.channel, text: "Always active! :)"
+    end
+
+    if data.user != "U7XCRLE78"
+      client.message channel: "GMEHL04BZ", text: data.user + " a écrit sur " + data.channel + ": \n>" + data.text
+    end
+
+    logger.info data
+  end
+
+  client.on(:team_join) do |data|
+    client.message channel: "GMEHL04BZ", text: "Bienvenue, #{data.user}!!"
+  end
+
   threads << client.start_async
 end
 
