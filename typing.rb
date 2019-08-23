@@ -33,13 +33,19 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
 
   client.on(:user_typing) do |data|
     logger.info data
-    client.typing channel: data.channel
+
+    if data.user != "U8QUCDX0U"
+      client.typing channel: data.channel
+    end
 
     user = client2.users_info(user: data.user).user
-    channel = client2.channels_info(channel: data.channel).channel
 
-    client.message channel: "GMEHL04BZ", text: "_*#{user.name}* (#{data.user}) est en train d'écrire dans *#{channel.name}* (#{data.channel})_"
-    #client.message channel: data.channel, text: "What are you typing <@#{data.user}>?"
+    begin
+      channel = client2.channels_info(channel: data.channel).channel
+      client.message channel: "GMEHL04BZ", text: "_*#{user.name}* (#{data.user}) est en train d'écrire dans *#{channel.name}* (#{data.channel})_"
+    rescue
+      client.message channel: "GMEHL04BZ", text: "_*#{user.name}* (#{data.user}) est en train d'écrire dans (#{data.channel})_"
+    end
   end
 
   client.on(:message) do |data|
@@ -56,10 +62,12 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
       client.message channel: "GMEHL04BZ", text: ">"+ text
     end
 
-    if data.user != "U7XCRLE78"
-      user = client2.users_info(user: data.user).user
+    user = client2.users_info(user: data.user).user
+    begin
       channel = client2.channels_info(channel: data.channel).channel
       client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur *#{channel.name}* (#{data.channel}): \n> #{data.text}"
+    rescue
+      client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur (#{data.channel}): \n> #{data.text}"
     end
 
     logger.info data
