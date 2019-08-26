@@ -49,25 +49,27 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
   end
 
   client.on(:message) do |data|
-    # Test pulse, simply type `test` to self to check if app is running
-    if data.channel == "D7WHQFK9S" && data.user == "U7XCRLE78"
-      if data.text == "test"
-        client.message channel: data.channel, text: "Always active! :)"
+    if data.user != "USLACKBOT"
+      # Test pulse, simply type `test` to self to check if app is running
+      if data.channel == "D7WHQFK9S" && data.user == "U7XCRLE78"
+        if data.text == "test"
+          client.message channel: data.channel, text: "Always active! :)"
+        end
       end
-    end
 
-    if data.text.include? "fortune"
-      key = $categories.keys.sample
-      text = $categories[key].sample.strip.gsub(/"/,"'").split("\n").join("\n>")
-      client.message channel: "GMEHL04BZ", text: ">"+ text
-    end
+      if data.text.include? "fortune"
+        key = $categories.keys.sample
+        text = $categories[key].sample.strip.gsub(/"/,"'").split("\n").join("\n>")
+        client.message channel: "GMEHL04BZ", text: ">"+ text
+      end
 
-    user = client2.users_info(user: data.user).user
-    begin
-      channel = client2.channels_info(channel: data.channel).channel
-      client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur *#{channel.name}* (#{data.channel}): \n> #{data.text}"
-    rescue
-      client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur (#{data.channel}): \n> #{data.text}"
+      user = client2.users_info(user: data.user).user
+      begin
+        channel = client2.channels_info(channel: data.channel).channel
+        client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur *#{channel.name}* (#{data.channel}): \n> #{data.text}"
+      rescue
+        client.message channel: "GMEHL04BZ", text: "*#{user.name}* (#{data.user}) a écrit sur (#{data.channel}): \n> #{data.text}"
+      end
     end
 
     logger.info data
