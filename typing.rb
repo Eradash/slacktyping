@@ -34,7 +34,7 @@ ENV['SLACK_API_TOKENS'].split.each do |token|
   client.on(:user_typing) do |data|
     logger.info data
 
-    if data.user != "U8QUCDX0U" && data.user != "U0AUB0FT6"
+    if data.user != "U8QUCDX0U" && data.user != "U0AUB0FT6" && data.channel != "CDBA2T69W"
       client.typing channel: data.channel
     end
 
